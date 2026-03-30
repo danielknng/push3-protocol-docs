@@ -24,3 +24,7 @@ Research and testing scripts in [tools/](tools/). Requires `pyusb`, `pillow`, `m
 See [tools/README.md](tools/README.md) for setup and usage.
 
 Cheers.
+
+---
+
+Push 2 information references [DrivenByMoss](https://github.com/git-moss/DrivenByMoss) and Ableton's official Push 2 documentation.
