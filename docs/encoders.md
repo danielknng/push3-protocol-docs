@@ -71,6 +71,22 @@ SMALL_KNOB_2 = {
 }
 ```
 
+### Disambiguating CC 15
+
+Small Knob 1 press and Small Knob 2 rotation both use CC 15. Distinguish them by value:
+
+- Press/release always sends exactly 0 or 127
+- Encoder steps always send 1-63 (right) or 64-126 (left) - never 0 or 127
+
+```python
+def handle_cc15(value: int):
+    if value == 0 or value == 127:
+        on_knob1_press(pressed=(value == 127))
+    else:
+        delta = decode_encoder(value)
+        on_knob2_rotate(delta)
+```
+
 ---
 
 ## Knob 9 - Master Volume
