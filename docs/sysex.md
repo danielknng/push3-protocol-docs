@@ -249,11 +249,41 @@ def send_output_config(midi_out, config: int):
 
 ---
 
+## Color Palette
+
+Pad and button colors are controlled via a 128-entry RGBW palette. Each color component is 7-bit encoded as two bytes (low 7 bits, high 7 bits).
+
+| Command | Direction | Purpose |
+|---|---|---|
+| `0x03` | host -> device | Write palette entry |
+| `0x04` | host -> device | Read palette entry (request) |
+| `0x05` | host -> device | Re-apply palette after changes |
+
+Write format (`0x03`):
+
+```python
+def write_palette_entry(midi_out, index: int, r: int, g: int, b: int, w: int = 0):
+    # r, g, b, w: 0..255 each, encoded as 7-bit pairs
+    def split(v): return v % 128, v // 128
+    rl, rh = split(r)
+    gl, gh = split(g)
+    bl, bh = split(b)
+    wl, wh = split(w)
+    send_sysex(midi_out, [0x03, index, rl, rh, gl, gh, bl, bh, wl, wh])
+
+def reapply_palette(midi_out):
+    send_sysex(midi_out, [0x05])
+```
+
+This is shared with Push 2. Full documentation in the [Ableton Push 2 interface spec](https://github.com/Ableton/push-interface/blob/main/doc/AbletonPush2MIDIDisplayInterface.asc).
+
+---
+
 ## Unknown Commands
 
 ```python
 UNKNOWN = {
-    0x38: 'Possibly RGB LED Control',
+    0x38: 'Unknown',
     0x3A: 'Unknown',
     0x3E: 'Unknown',
 }
