@@ -1,75 +1,46 @@
-# Push 3 Encoder & Knob Mapping Reference
+# Push 3 Encoder & Knob Mapping
 
-Complete mapping of all rotary encoders and knobs on the Push 3, including touch detection and directional control values.
+---
 
-## Main Parameter Encoders (8 encoders)
+## Rotation Value Encoding
 
-Eight touch-sensitive endless rotary encoders located above the main display, used for parameter control.
+All encoders use 7-bit two's complement for relative movement:
 
-### Encoder Touch Detection
+- Right (clockwise): values 1-63 - higher = faster turn
+- Left (counter-clockwise): values 64-127 - lower = faster turn (127 = slowest left)
 
-Each encoder sends a touch detection message when physically touched:
+One full 360° turn sends approximately 210 steps, except the Swing/Tempo encoder which is detented at 18 steps per turn.
 
 ```python
-ENCODER_TOUCH = {
-    'ENCODER_1': {'cc': 0, 'velocity': 127},   # Touch detected
-    'ENCODER_2': {'cc': 1, 'velocity': 127},
-    'ENCODER_3': {'cc': 2, 'velocity': 127},
-    'ENCODER_4': {'cc': 3, 'velocity': 127},
-    'ENCODER_5': {'cc': 4, 'velocity': 127},
-    'ENCODER_6': {'cc': 5, 'velocity': 127},
-    'ENCODER_7': {'cc': 6, 'velocity': 127},
-    'ENCODER_8': {'cc': 7, 'velocity': 127}
-}
+def decode_encoder(value: int) -> float:
+    # Returns relative change: positive = right, negative = left
+    if value <= 63:
+        return value        # right turn
+    else:
+        return value - 128  # left turn (two's complement)
 ```
 
-### Encoder Rotation Values
+---
 
-Each encoder sends rotation data with direction-specific velocities:
+## Main Parameter Encoders
 
-| Encoder | Touch CC | Rotation CC | Left Turn | Right Turn |
-|---------|----------|-------------|-----------|------------|
-| **1** | 0 | 71 | Velocity 127 | Velocity 1 |
-| **2** | 1 | 72 | Velocity 127 | Velocity 1 |
-| **3** | 2 | 73 | Velocity 127 | Velocity 1 |
-| **4** | 3 | 74 | Velocity 127 | Velocity 1 |
-| **5** | 4 | 75 | Velocity 127 | Velocity 1 |
-| **6** | 5 | 76 | Velocity 127 | Velocity 1 |
-| **7** | 6 | 77 | Velocity 127 | Velocity 1 |
-| **8** | 7 | 78 | Velocity 127 | Velocity 1 |
+Eight touch-sensitive encoders above the display. Touch is sent as `note_on` on channel 0.
 
-### Usage Examples
-
-```python
-# Example: Encoder 1 touched
-# MIDI: Control Change, Channel 1, CC 0, Velocity 127
-
-# Example: Encoder 1 turned left (counter-clockwise)
-# MIDI: Control Change, Channel 1, CC 71, Velocity 127
-
-# Example: Encoder 1 turned right (clockwise)  
-# MIDI: Control Change, Channel 1, CC 71, Velocity 1
-```
-
-## Volume Encoder
-
-Dedicated volume control encoder located on the left side of the device.
-
-| Function | CC Value | Left Turn | Right Turn | Touch |
-|----------|----------|-----------|------------|-------|
-| **Volume** | 79 | Velocity 127 | Velocity 1 | CC 8, Vel 127 |
-
-
-### Encoder Press
-
-| Function         | CC Value | Pressed | Released |
-|------------------|---------|---------|----------|
-| **Encoder Press**| 111     | 0       | 127      |
+| Encoder | Rotation CC | Touch CC |
+|---|---|---|
+| 1 | 71 | 0 |
+| 2 | 72 | 1 |
+| 3 | 73 | 2 |
+| 4 | 74 | 3 |
+| 5 | 75 | 4 |
+| 6 | 76 | 5 |
+| 7 | 77 | 6 |
+| 8 | 78 | 7 |
 
 ```python
-VOLUME_ENCODER = {
-    'touch': {'cc': 8, 'velocity': 127},
-    'rotation': {'cc': 79, 'left': 127, 'right': 1}
+ENCODERS = {
+    i + 1: {'rotation_cc': 71 + i, 'touch_cc': i}
+    for i in range(8)
 }
 ```
 
