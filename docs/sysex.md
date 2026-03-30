@@ -249,6 +249,61 @@ def send_output_config(midi_out, config: int):
 
 ---
 
+## Brightness
+
+### LED Brightness
+
+Global brightness for all LEDs, 0-127. At USB power only, automatically limited to 8.
+
+```python
+def set_led_brightness(midi_out, value: int):
+    # value: 0..127
+    send_sysex(midi_out, [0x06, value & 0x7F])
+
+def get_led_brightness(midi_out):
+    send_sysex(midi_out, [0x07])
+    # Push replies with: F0 00 21 1D 01 01 07 <value> F7
+```
+
+### Display Brightness
+
+Backlight brightness, 0-255 (14-bit, two bytes). At USB power, automatically limited to 100.
+
+```python
+def set_display_brightness(midi_out, value: int):
+    # value: 0..255
+    send_sysex(midi_out, [0x08, value & 0x7F, (value >> 7) & 0x01])
+
+def get_display_brightness(midi_out):
+    send_sysex(midi_out, [0x09])
+    # Push replies with: F0 00 21 1D 01 01 09 <lo> <hi> F7
+```
+
+---
+
+## LED Animations
+
+Pad and button LEDs support color transitions without continuous MIDI messages from the host. The starting color is sent on MIDI channel 0, the transition is sent on channels 1-15.
+
+This is fully documented in the [Ableton Push 2 interface spec](https://github.com/Ableton/push-interface/blob/main/doc/AbletonPush2MIDIDisplayInterface.asc) - section 2.6.8 LED Animation. The mechanism works identically on Push 3.
+
+---
+
+## Touch Strip LEDs
+
+When the host takes control of the touch strip LEDs, their 31 brightness values (0-7 each) can be set via command `0x19`.
+
+```python
+def set_touch_strip_leds(midi_out, leds: list):
+    # leds: 31 values, each 0..7. led[0] = bottom, led[30] = top
+    assert len(leds) == 31
+    send_sysex(midi_out, [0x19] + leds)
+```
+
+The host must first configure the touch strip to accept LED commands - see Touch Strip section below. Full LED control documentation in the [Ableton Push 2 interface spec](https://github.com/Ableton/push-interface/blob/main/doc/AbletonPush2MIDIDisplayInterface.asc) - section 2.6.4 and 2.10.
+
+---
+
 ## Color Palette
 
 Pad and button colors are controlled via a 128-entry RGBW palette. Each color component is 7-bit encoded as two bytes (low 7 bits, high 7 bits).
