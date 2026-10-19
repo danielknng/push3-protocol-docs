@@ -1,6 +1,6 @@
 # Push 3 USB Display Protocol
 
-960x160px display, RGB565 little-endian, USB 2.0 Bulk. No official documentation exists - this is based on reverse engineering.
+960x160px display, RGB565 little-endian, USB 2.0 Bulk.
 
 ---
 
