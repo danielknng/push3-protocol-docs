@@ -2,8 +2,6 @@
 
 Get a two-way connection between Python and the Push 3: open ports, enter User Mode, light a pad, log pad presses.
 
-Ableton publishes no official API for Push 3. Everything here is based on reverse engineering.
-
 ---
 
 ## Requirements
