@@ -1,6 +1,6 @@
 # push3-protocol-docs
 
-Reverse-engineered protocol documentation for the Ableton Push 3. Ableton publishes no official API - this covers the USB display protocol, MIDI mapping, pad sensitivity curves, SysEx commands, MPE, and audio interface configuration.
+Reverse-engineered protocol documentation for the Ableton Push 3. This covers the USB display protocol, MIDI mapping, pad sensitivity curves, SysEx commands, MPE, and audio interface configuration.
 
 ---
 
